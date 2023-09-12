@@ -97,7 +97,6 @@ func (e *OpenVPNExporter) Collect(ch chan<- prometheus.Metric) {
 	client, _ := xmlrpc.NewClient("http://localhost/", opts...)
 	defer client.Close()
 
-
 	err := e.CollectVPNSummary(*client, ch)
 	if err != nil {
 		ch <- prometheus.MustNewConstMetric(
@@ -126,7 +125,9 @@ func (e *OpenVPNExporter) Collect(ch chan<- prometheus.Metric) {
 func (e *OpenVPNExporter) CollectVPNSummary(client xmlrpc.Client, ch chan<- prometheus.Metric) error {
 	result := &struct {
 		VPNSummary struct {
-			NClients int `xml:"n_clients"`
+			NClients         int    `xml:"n_clients"`
+			OvpnDcoVer       string `xml:"ovpn_dco_ver"`
+			OvpnDcoAvailable bool   `xml:"ovpn_dco_available"`
 		}
 	}{}
 
@@ -147,25 +148,24 @@ func (e *OpenVPNExporter) CollectVPNSummary(client xmlrpc.Client, ch chan<- prom
 func (e *OpenVPNExporter) CollectSubscriptionStatistics(client xmlrpc.Client, ch chan<- prometheus.Metric) error {
 	result := &struct {
 		SubscriptionStatus struct {
-			AgentDisabled           bool     `xml:"agent_disabled"`
-			AgentId                 string   `xml:"agent_id"`
-			CcLimit                 int      `xml:"cc_limit"`
-			CurrentCc               int      `xml:"current_cc"`
-			Error                   string   `xml:"error"`
-			FallbackCc              int      `xml:"fallback_cc"`
-			GracePeriod             int      `xml:"grace_period"`
-			LastSuccessfulUpdate    int      `xml:"last_successful_update"`
-			LastSuccessfulUpdateAge int      `xml:"last_successful_update_age"`
-			MaxCc                   int      `xml:"max_cc"`
-			Name                    string   `xml:"name"`
-			NextUpdate              int      `xml:"next_update"`
-			NextUpdateIn            int      `xml:"next_update_in"`
-			Notes                   []string `xml:"notes"`
-			Overdraft               bool     `xml:"overdraft"`
-			Server                  string   `xml:"server"`
-			State                   string   `xml:"state"`
-			Type                    string   `xml:"type"`
-			UpdatesFailed           int      `xml:"updates_failed"`
+			AgentDisabled        bool     `xml:"agent_disabled"`
+			AgentId              string   `xml:"agent_id"`
+			CcLimit              int      `xml:"cc_limit"`
+			CurrentCc            int      `xml:"current_cc"`
+			Error                string   `xml:"error"`
+			FallbackCc           int      `xml:"fallback_cc"`
+			GracePeriod          int      `xml:"grace_period"`
+			LastSuccessfulUpdate int      `xml:"last_successful_update"`
+			MaxCc                int      `xml:"max_cc"`
+			Name                 string   `xml:"name"`
+			NextUpdate           int      `xml:"next_update"`
+			Notes                []string `xml:"notes"`
+			Overdraft            bool     `xml:"overdraft"`
+			Server               string   `xml:"server"`
+			State                string   `xml:"state"`
+			TotalCc              int      `xml:"total_cc"`
+			Type                 string   `xml:"type"`
+			UpdatesFailed        int      `xml:"updates_failed"`
 		}
 	}{}
 
